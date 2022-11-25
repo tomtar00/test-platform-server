@@ -1,0 +1,23 @@
+[
+    {
+        "name": "User",
+        "can_manage_permissions": false,
+        "can_manage_tests": false,
+        "can_view_stats": false,
+        "can_access_admin_panel": false
+    },
+    {
+        "name": "Teacher",
+        "can_manage_permissions": false,
+        "can_manage_tests": true,
+        "can_view_stats": true,
+        "can_access_admin_panel": false
+    },
+    {
+        "name": "Admin",
+        "can_manage_permissions": true,
+        "can_manage_tests": true,
+        "can_view_stats": true,
+        "can_access_admin_panel": true
+    }
+]

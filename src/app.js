@@ -3,6 +3,7 @@ const cors = require('cors')
 const morgan = require('morgan')
 const bodyParser = require('body-parser')
 
+const { routes } = require('./routes/routes')
 const { config } = require('./config')
 
 // initialize router and server instances
@@ -18,7 +19,9 @@ app.use(morgan('dev'))
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json({ limit: '2048kb' }));
 
-// TODO:apply routes
+// apply routes
+routes(router)
+app.use(router)
 
 // listen on port
 app.listen(config.port, () => {

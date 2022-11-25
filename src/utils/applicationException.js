@@ -14,6 +14,7 @@ module.exports = {
     PRECONDITION_FAILED: { message: 'PRECONDITION_FAILED', code: 412 },
     CONFLICT: { message: 'CONFLICT', code: 409 },
 
+    exc: ApplicationException,
     is: (error, errorCode) => {
         return error instanceof ApplicationException && (null == errorCode || error.error === errorCode)
     },
