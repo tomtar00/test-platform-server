@@ -35,7 +35,7 @@ class UserService extends RestService {
 
     }
 
-    getUserGroups(userId) {
+    findUserGroups(userId) {
 
     }
 
