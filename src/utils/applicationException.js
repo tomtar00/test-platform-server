@@ -18,7 +18,7 @@ module.exports = {
     is: (error, errorCode) => {
         return error instanceof ApplicationException && (null == errorCode || error.error === errorCode)
     },
-    new: (code, message) => {
+    err: (code, message) => {
         return new ApplicationException(code, message)
     },
     handle: (error, response, next) => {

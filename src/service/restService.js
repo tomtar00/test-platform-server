@@ -40,7 +40,7 @@ class RestService {
             restRepository.selectSingle(this.schemaTableName, id)
                 .then(res => {
                     if (res.length <= 0)
-                        reject(error.new(error.NOT_FOUND, `Failed to find ${this.objName}`))
+                        reject(error.err(error.NOT_FOUND, `Failed to find ${this.objName}`))
                     resolve(res)
                 })
                 .catch(err => reject(err))
@@ -52,7 +52,7 @@ class RestService {
             restRepository.selectMultiple(this.schemaTableName, ids)
                 .then(res => {
                     if (res.length <= 0)
-                        reject(error.new(error.NOT_FOUND, `Failed to find ${this.objName}s`))
+                        reject(error.err(error.NOT_FOUND, `Failed to find ${this.objName}s`))
                     resolve(res)
                 })
                 .catch(err => reject(err))

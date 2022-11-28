@@ -1,6 +1,8 @@
+const { pgConfig } = require('../config')
+
 class RestRepository {
 
-    makeQuery(query, params) {
+    static makeQuery(query, params) {
         return new Promise((resolve, reject) => {
             pgConfig.query(query, params, (error, results) => {
                 if (error) {
@@ -23,16 +25,16 @@ class RestRepository {
     }
 
     static selectSingle(tableName, id) {
-        return makeQuery(`SELECT * FROM ${tableName} WHERE id = $1`, [id])
+        return this.makeQuery(`SELECT * FROM ${tableName} WHERE id = $1`, [id])
     }
 
     static selectMultiple(tableName, ids) {
-        return makeQuery(`SELECT * FROM ${tableName} WHERE id IN $1`, [ids])
+        return this.makeQuery(`SELECT * FROM ${tableName} WHERE id IN $1`, [ids])
     }
 
     static insertSingle(tableName, body) {
         let { columns, values } = this.jsonBodyToQueryValues(body)
-        return makeQuery(`INSERT INTO ${tableName} ($1) VALUES ($2) RETURNING *`, [columns, values])
+        return this.makeQuery(`INSERT INTO ${tableName} ($1) VALUES ($2) RETURNING *`, [columns, values])
     }
 
     static insertMultiple(tableName, bodies) {
@@ -44,7 +46,7 @@ class RestRepository {
             values.push(_values)
         }
         values = values.map(item => '(' + item + ')')
-        return makeQuery(`INSERT INTO ${tableName} ($1) VALUES ($2) RETURNING *`, [columns, values])
+        return this.makeQuery(`INSERT INTO ${tableName} ($1) VALUES ($2) RETURNING *`, [columns, values])
     }
 
     static updateSingle(tableName, body, id) {
@@ -53,15 +55,15 @@ class RestRepository {
         columns.forEach((col, idx) => {
             set_query.push(col + '=' + values[idx])
         })
-        return makeQuery(`UPDATE ${tableName} SET $1 WHERE id = $2 RETURNING *`, [set_query, id])
+        return this.makeQuery(`UPDATE ${tableName} SET $1 WHERE id = $2 RETURNING *`, [set_query, id])
     }
 
     static deleteSingle(tableName, id) {
-        return makeQuery(`DELETE FROM ${tableName} WHERE id = $1 RETURNING *`, [id])
+        return this.makeQuery(`DELETE FROM ${tableName} WHERE id = $1 RETURNING *`, [id])
     }
 
     static deleteMultiple(tableName, ids) {
-        return makeQuery(`DELETE FROM ${tableName} WHERE id IN $1 RETURNING *`, [ids])
+        return this.makeQuery(`DELETE FROM ${tableName} WHERE id IN $1 RETURNING *`, [ids])
     }
 }
 

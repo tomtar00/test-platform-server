@@ -1,7 +1,9 @@
 const RestService = require("./restService")
+const userRepository = require('../repository/userRepository')
+const exc = require("../utils/applicationException")
 
-const customGroupsPath = './data/db_extensions/additional_groups.json'
-const modUsersPath = './data/db_extensions/modified_users.json'
+const customGroupsPath = './data/default_groups.json'
+const modUsersPath = './data/modified_users.json'
 
 
 class UserService extends RestService {
@@ -48,7 +50,15 @@ class UserService extends RestService {
     }
 
     findUserPermissions(userId) {
-
+        return new Promise((resolve, reject) => {
+            userRepository.findUserPermissions(userId)
+                .then(permissions => {
+                    if (permissions.length == 0)
+                        reject(exc.err(exc.NOT_FOUND, 'User permissions not found'))
+                    else resolve(permissions)
+                })
+                .catch(err => reject(err))
+        })
     }
 }
 

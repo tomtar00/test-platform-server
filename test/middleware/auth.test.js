@@ -1,18 +1,18 @@
 const auth = require('../../src/middleware/auth')
-const { exc, FORBIDDEN, UNAUTHORIZED } = require('../../src/utils/applicationException')
+const { err, UNAUTHORIZED, VALIDATION_FAILURE, FORBIDDEN } = require('../../src/utils/applicationException')
 
 describe('Authorization', () => {
 
     // tokens
-    const student = null
-    const teacher = null
-    const admin = null
+    const student = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50X25hbWUiOiJzdHVkZW50IiwiaWQiOjEsImV4cCI6OTk5OTk5OTk5OX0.2b4YnBg3gC6WEK7AFoP_jsGQ-chA5cnE3fCS7SNLRN4'
+    const teacher = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50X25hbWUiOiJ0ZWFjaGVyIiwiaWQiOjIsImV4cCI6OTk5OTk5OTk5OX0.KQPuR75jPc16e9rwj6cBkEM3Bx9L72LJ8wi1DdGRrro'
+    const admin = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50X25hbWUiOiJhZG1pbiIsImlkIjozLCJleHAiOjk5OTk5OTk5OTl9.0kP61nWxWCq6CXPPfUtTeCQgXsYmPD61f1D1PepGMS4'
 
     // simulate request object
     const req = (accessToken) => {
         return {
             headers: {
-                accessToken
+                access_token: accessToken
             }
         }
     }
@@ -60,7 +60,7 @@ describe('Authorization', () => {
             }))
             const promise = user_permissions[i] ?
                 expectation.resolves.toEqual(true) :
-                expectation.rejects.toBeInstanceOf(exc)
+                expectation.rejects.toEqual(err(FORBIDDEN, "Forbidden resource requested"))
             promises.push(promise)
         }
 
@@ -91,6 +91,6 @@ describe('Authorization', () => {
         const exception = await auth.authorize(req(expired_token), res(), perm => {
             return perm.manage_permissions
         }).catch(x => x)
-        expect(exception.error).toEqual(FORBIDDEN)
+        expect(exception.error).toEqual(VALIDATION_FAILURE)
     })
 })

@@ -1,4 +1,4 @@
-const { UserService } = require("../../src/service/serviceManager")
+const UserService = require("../../src/service/userService")
 const { exc } = require("../../src/utils/applicationException")
 
 describe('User service', () => {
