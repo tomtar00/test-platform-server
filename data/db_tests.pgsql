@@ -5,6 +5,15 @@ select * from users.account_permissions;
 select * from users.groups;
 select * from users.account_groups;
 
+-- paginate
+SELECT *, (SELECT COUNT(*) FROM users.accounts) FROM users.accounts OFFSET 0 LIMIT 2
+
+-- user groups
+SELECT * FROM users.accounts a
+JOIN users.account_groups ac ON a.id = ac.account_id
+JOIN users.groups g ON ac.group_id = g.id
+WHERE a.id = 3
+
 ------------------- INSERT -------------------------
 insert into users.accounts values ('student', 'student123', 1);
 insert into users.accounts values ('teacher', 'teacher123', 2);

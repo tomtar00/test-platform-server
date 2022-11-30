@@ -54,7 +54,7 @@ class UserController extends RestController {
     findUserGroups = (req, res, next) => {
         const id = req.query.userId
 
-        this.service.getUserGroups(id)
+        this.service.findUserGroups(id)
             .then(groups => {
                 res.status(200).send(groups)
             })

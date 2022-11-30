@@ -24,6 +24,10 @@ class RestRepository {
         return { columns, values }
     }
 
+    static selectAll(tableName) {
+        return this.makeQuery(`SELECT * FROM ${tableName}`)
+    }
+
     static selectSingle(tableName, id) {
         return this.makeQuery(`SELECT * FROM ${tableName} WHERE id = $1`, [id])
     }
@@ -64,6 +68,10 @@ class RestRepository {
 
     static deleteMultiple(tableName, ids) {
         return this.makeQuery(`DELETE FROM ${tableName} WHERE id IN $1 RETURNING *`, [ids])
+    }
+
+    static paginate(tableName, page, pageSize) {
+        return this.makeQuery(`SELECT *, (SELECT COUNT(*) FROM ${tableName}) FROM ${tableName} OFFSET $1 LIMIT $2`, [(page-1) * pageSize, pageSize])
     }
 }
 

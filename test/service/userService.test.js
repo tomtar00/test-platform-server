@@ -5,15 +5,22 @@ describe('User service', () => {
     
     const userService = new UserService()
 
+    // simulate response object
+    const res = () => {
+        return {
+            set : (a, b) => {}
+        }
+    }
+
     it('can authenticate users', async () => {
         const credentials = {
             username: "student",
             password: "student123"
         }
-        const auth = await userService.authenticate(credentials)
+        const auth = await userService.authenticate(credentials, res())
         expect(auth).toBeDefined()
 
-        const auth_fail = await userService.authenticate({}).catch(x => x)
+        const auth_fail = await userService.authenticate({}, res()).catch(x => x)
         expect(auth_fail).toBeInstanceOf(exc)
     })
     
@@ -22,8 +29,8 @@ describe('User service', () => {
         const userFromName = await userService.find(null, 'student')
         const userPage = await userService.find(null, null, 1, 3)
 
-        expect(userFromId).toHaveProperty('username')
-        expect(userFromName).toHaveProperty('username')
+        expect(userFromId[0]).toHaveProperty('account_name')
+        expect(userFromName[0]).toHaveProperty('account_name')
         expect(userPage).toHaveLength(3)
 
         const userFromId_fail = await userService.find(-1).catch(x => x)
@@ -35,7 +42,7 @@ describe('User service', () => {
         expect(userPage_fail).toBeInstanceOf(exc)
     })
 
-    it.todo('can get groups and permissions of a user', async () => {
+    it('can get groups and permissions of a user', async () => {
         const userId = '1'
 
         const groups = await userService.findAllGroups()

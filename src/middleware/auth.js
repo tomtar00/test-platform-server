@@ -75,7 +75,7 @@ exports.solve_tests = (req, res, next) => {
         return new Promise((resolve, reject) => {
             // find all user groups from database
             let user_groups
-            userService.getUserGroups(userPermissions.account_id)
+            userService.findUserGroups(userPermissions.account_id)
                 .then(groups => {
                     user_groups = groups.map(g => g.group_name)
                     return testService.find(req.query.id || req.body[0].test_id)

@@ -1,5 +1,6 @@
-const auth = require('../../src/middleware/auth')
 const { err, UNAUTHORIZED, VALIDATION_FAILURE, FORBIDDEN } = require('../../src/utils/applicationException')
+require('../../src/routes/routes')
+const auth = require('../../src/middleware/auth')
 
 describe('Authorization', () => {
 
@@ -20,7 +21,7 @@ describe('Authorization', () => {
     // simulate response object
     const res = () => {
         return {
-            set : (a, b) => {}
+            set: (a, b) => { }
         }
     }
 
