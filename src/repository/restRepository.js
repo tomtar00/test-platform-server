@@ -1,4 +1,5 @@
 const { pgConfig } = require('../config')
+const format = require('pg-format');
 
 class RestRepository {
 
@@ -16,11 +17,15 @@ class RestRepository {
     }
 
     static jsonBodyToQueryValues(body) {
-        let columns = []
-        let values = []
-        for (const [key, value] of Object.entries(body)) {
-            // TODO: split here
-        }
+        const columns = Object.keys(body)
+        let values = Object.values(body)
+        values = values.map(value => {
+            if (Array.isArray(value))
+                return `ARRAY[${value.join(',')}]`
+            else if (typeof value == 'string')
+                return `'${value}'`
+            else return value
+        })
         return { columns, values }
     }
 
@@ -38,19 +43,20 @@ class RestRepository {
 
     static insertSingle(tableName, body) {
         let { columns, values } = this.jsonBodyToQueryValues(body)
-        return this.makeQuery(`INSERT INTO ${tableName} ($1) VALUES ($2) RETURNING *`, [columns, values])
+        const query = format(`INSERT INTO ${tableName} (%s) VALUES (%s) RETURNING *`, columns, values)
+        return this.makeQuery(query, [])
     }
 
     static insertMultiple(tableName, bodies) {
-        let columns = []
-        let values = []
+        let _columns = []
+        let _values = []
         for (let body of bodies) {
-            const { _columns, _values } = this.jsonBodyToQueryValues(body)
-            columns = _columns
-            values.push(_values)
+            const { columns, values } = this.jsonBodyToQueryValues(body)
+            _columns = columns
+            _values.push(values)
         }
-        values = values.map(item => '(' + item + ')')
-        return this.makeQuery(`INSERT INTO ${tableName} ($1) VALUES ($2) RETURNING *`, [columns, values])
+        const query = format(`INSERT INTO ${tableName} (%s) VALUES %L RETURNING *`, _columns, _values)
+        return this.makeQuery(query, [])
     }
 
     static updateSingle(tableName, body, id) {
@@ -59,7 +65,7 @@ class RestRepository {
         columns.forEach((col, idx) => {
             set_query.push(col + '=' + values[idx])
         })
-        return this.makeQuery(`UPDATE ${tableName} SET $1 WHERE id = $2 RETURNING *`, [set_query, id])
+        return this.makeQuery(format(`UPDATE ${tableName} SET %s WHERE id = %s RETURNING *`, set_query, id), [])
     }
 
     static deleteSingle(tableName, id) {

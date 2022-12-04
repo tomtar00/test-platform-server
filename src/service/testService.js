@@ -28,7 +28,11 @@ class TestService extends RestService {
 
     }
 
-    findAll(page, page_size, form, name) {
+    findAll(page, page_size, name) {
+
+    }
+
+    add(body) {
 
     }
 

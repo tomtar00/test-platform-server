@@ -18,7 +18,9 @@
         "jsonwebtoken": "^8.5.1",
         "lodash": "^4.17.21",
         "morgan": "^1.10.0",
-        "pg": "^8.7.3"
+        "pg": "^8.7.3",
+        "pg-format": "^1.0.4",
+        "shelljs": "^0.8.5"
     },
     "devDependencies": {
         "@types/jest": "^29.2.3"

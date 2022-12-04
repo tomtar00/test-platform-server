@@ -1,24 +1,9 @@
-const { pgConfig } = require('../config')
 const restRepository = require('../repository/restRepository')
-const error = require('../utils/applicationException')
+const exc = require('../utils/applicationException')
 
 class RestService {
 
-    constructor() {
-        this.column_names = []
-
-        // get table's column names from database
-        const column_query = `
-            SELECT column_name FROM information_schema.columns WHERE TABLE_NAME = '${this.tableName}'`
-        pgConfig.query(column_query, (error, results) => {
-            if (error) {
-                console.error(error)
-            }
-            else {
-                this.column_names = results.rows.map(item => item.column_name)
-            }
-        })
-    }
+    constructor() { /* empty */  }
 
     find(id) {
         return new Promise((resolve, reject) => {
@@ -40,7 +25,7 @@ class RestService {
             restRepository.selectSingle(this.schemaTableName, id)
                 .then(res => {
                     if (res.length <= 0)
-                        reject(error.err(error.NOT_FOUND, `Failed to find ${this.objName}`))
+                        reject(exc.err(exc.NOT_FOUND, `Failed to find ${this.itemName}`))
                     resolve(res)
                 })
                 .catch(err => reject(err))
@@ -52,7 +37,7 @@ class RestService {
             restRepository.selectMultiple(this.schemaTableName, ids)
                 .then(res => {
                     if (res.length <= 0)
-                        reject(error.err(error.NOT_FOUND, `Failed to find ${this.objName}s`))
+                        reject(exc.err(exc.NOT_FOUND, `Failed to find ${this.itemName}s`))
                     resolve(res)
                 })
                 .catch(err => reject(err))
@@ -112,7 +97,7 @@ class RestService {
                         .catch(err => reject(err))
                 }
             })
-            .catch(err => reject(err))
+                .catch(err => reject(err))
         })
     }
 
@@ -129,6 +114,43 @@ class RestService {
             restRepository.deleteMultiple(this.schemaTableName, ids)
                 .then(res => resolve(res))
                 .catch(err => reject(err))
+        })
+    }
+
+    paginate(name, page, pageSize, getNameField) {
+        return new Promise((resolve, reject) => {
+            pageSize = parseInt(pageSize)
+            page = parseInt(page)
+    
+            if (((!page || !pageSize) && !name) || page < 1 || pageSize < 1) {
+                reject(exc.err(exc.BAD_REQUEST,
+                    `Passed invalid pagination params: page = ${page}, page_size = ${pageSize}`))
+            }
+            else 
+            {
+                let promise = (!page || !pageSize) && name ? 
+                    restRepository.selectAll(this.schemaTableName) :
+                    restRepository.paginate(this.schemaTableName, page, pageSize)
+    
+                promise.then(items => {
+                    if (name)
+                        items = items.filter(item =>
+                            getNameField(item).toLowerCase().includes(name.toLowerCase())
+                        )
+
+                    if (items.length > 0) {
+                        this.pageCount = Math.ceil(items[0].count / pageSize)
+                        if (items[0].password)
+                            items.forEach(item => delete item.password)
+                        resolve(items)
+                    }
+                    else {
+                        reject(exc.err(exc.NOT_FOUND, 'Users not found'))
+                    }
+    
+                })
+                .catch(err => reject(err))
+            }
         })
     }
 }

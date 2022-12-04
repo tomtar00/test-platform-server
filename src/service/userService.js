@@ -73,6 +73,7 @@ class UserService extends RestService {
                             })
                             .then(() => {
                                 res.set('access_token', token.generateAccessToken(username, user.id))
+                                delete user.password
                                 resolve([user])
                             })
                             .catch(_err => reject(_err))
@@ -89,6 +90,7 @@ class UserService extends RestService {
                                 .catch(_err => reject(_err))
 
                             res.set('access_token', token.generateAccessToken(username, user.id))
+                            delete user.password
                             resolve([user])
                         }
                     }
@@ -143,37 +145,8 @@ class UserService extends RestService {
 
     find(id, name, page, pageSize) {
         return new Promise((resolve, reject) => {
-            if (id)
-                super.find(id).then(user => resolve(user)).catch(_err => reject(_err))
-            else {
-                pageSize = parseInt(pageSize)
-                page = parseInt(page)
-
-                if (((!page || !pageSize) && !name) || page < 1 || pageSize < 1)
-                    reject(exc.err(exc.BAD_REQUEST,
-                        `Passed invalid pagination params: page = ${page}, page_size = ${pageSize}`))
-                else {
-                    let promise = (!page || !pageSize) && name ? userRepository.selectAll(userRepository.accountTable) : 
-                        userRepository.paginate(userRepository.accountTable, page, pageSize)
-                    
-                    promise
-                        .then(users => {
-                            if (name)
-                                users = users.filter(user =>
-                                    user.account_name.toLowerCase().includes(name.toLowerCase())
-                                )
-                            if (users.length > 0) {
-                                this.pageCount = Math.ceil(users[0].count / pageSize)
-                                resolve(users)
-                            }
-                            else {
-                                reject(exc.err(exc.NOT_FOUND, 'Users not found'))
-                            }
-
-                        })
-                        .catch(err => reject(err))
-                }
-            }
+            const promise = id ? super.find(id) : super.paginate(name, page, pageSize, user => user.account_name)
+            promise.then(user => resolve(user)).catch(_err => reject(_err))
         })
     }
 

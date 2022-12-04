@@ -8,18 +8,18 @@ class RestController {
 
         this.methods = {
             find: [
-                query('id', 'User id not found').isInt().optional(),
+                query('id', 'Id not found').isInt().optional(),
                 query('name').isString().optional(),
             ],
             add: [
                 body().isJSON()
             ],
             edit: [
-                query('id', 'User id not found').isInt().optional(),
+                query('id', 'Id not found').isInt().optional(),
                 body().isJSON()
             ],
             delete: [
-                query('id', 'User id not found').isInt().optional(),
+                query('id', 'Id not found').isInt().optional(),
             ]
         }
     }
