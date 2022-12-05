@@ -10,23 +10,23 @@ exports.userRoutes = (router, authorize) => {
 
     // Users
     router.route('/users/authenticate')
-        .post(userController.validate('authenticate'), userController.authenticate)
+        .post(authorize.user, userController.validate('authenticate'), userController.authenticate)
 
     router.route('/users/find')
-        .get(userController.validate('find'), userController.find)
+        .get(authorize.user, userController.validate('find'), userController.find)
 
     router.route('/users/delete')
         .delete(authorize.access_admin_panel, userController.validate('delete'), userController.delete)
 
     // Groups
     router.route('/users/permissions/find')
-        .get(userController.validate('findUserPermissions'), userController.findUserPermissions)
+        .get(authorize.user, userController.validate('findUserPermissions'), userController.findUserPermissions)
 
     router.route('/users/groups/find')
-        .get(userController.validate('findUserGroups'), userController.findUserGroups)
+        .get(authorize.user, userController.validate('findUserGroups'), userController.findUserGroups)
 
     router.route('/users/groups/find-all')
-        .get(userController.validate('findAllGroups'), userController.findAllGroups)
+        .get(authorize.user, userController.validate('findAllGroups'), userController.findAllGroups)
 
     router.route('/users/groups/edit')
         .put(authorize.manage_permissions, userController.validate('editGroupsPermissions'), userController.editGroupsPermissions)

@@ -19,7 +19,7 @@ describe('Test service', () => {
         ]
     }
     const testFormKeys = Object.keys(testForm)
-    const singleTestResponseKeys = ['id', 'test_name', 'groups', 'start_time', 'end_time']
+    const singleTestResponseKeys = ['test_name', 'groups', 'start_time', 'end_time', 'id']
 
     const convertOutputToInputForm = (testResult) => {
         const addedTest = testResult[0]
@@ -34,7 +34,7 @@ describe('Test service', () => {
     it('can find tests', async () => {
 
         const testFromId = await testService.find('1')
-        expect(Object.keys(testFromId)).toEqual(singleTestResponseKeys)
+        expect(Object.keys(testFromId[0])).toEqual(singleTestResponseKeys)
 
         const fullTestFromId = await testService.find(2, true)
         const fullTestFromIdInput = convertOutputToInputForm(fullTestFromId)
@@ -42,7 +42,7 @@ describe('Test service', () => {
 
         const testPage = await testService.findAll(1, 3)
         expect(testPage).toHaveLength(3)
-        expect(Object.keys(testPage[0])).toEqual(singleTestResponseKeys)
+        expect(Object.keys(testPage[0])).toEqual(singleTestResponseKeys.concat(['count']))
 
         const testNamePage = await testService.findAll(1, 3, 'test')
         expect(testNamePage).toHaveLength(3)
@@ -56,7 +56,7 @@ describe('Test service', () => {
         const fullTest_fail = await testService.find(null, 'test').catch(x => x)
         expect(fullTest_fail).toBeInstanceOf(exc)
 
-        const testPage_fail = await testService.find(1, -1, null).catch(x => x)
+        const testPage_fail = await testService.findAll(1, -1, null).catch(x => x)
         expect(testPage_fail).toBeInstanceOf(exc)
 
     })
@@ -71,8 +71,7 @@ describe('Test service', () => {
             some_wrong_column_name: 123,
             groups: [0, 1]
         }
-        const result_fail = await testService.add(wrongInputObject).catch(x => x)
-        expect(result_fail).toBeInstanceOf(exc)
+        expect(testService.add(wrongInputObject)).rejects.toThrowError()
     })
 
 })

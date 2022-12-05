@@ -20,13 +20,24 @@ class RestRepository {
         const columns = Object.keys(body)
         let values = Object.values(body)
         values = values.map(value => {
-            if (Array.isArray(value))
-                return `ARRAY[${value.join(',')}]`
+            if (Array.isArray(value)) {
+                const sign = typeof value[0] == 'string' ? '%L' : '%s'
+                return `ARRAY[${format(sign, value)}]`
+            }
             else if (typeof value == 'string')
                 return `'${value}'`
             else return value
         })
         return { columns, values }
+    }
+
+    static selectBy(tableName, entry) {
+        let conditions = []
+        Object.entries(entry).forEach(keyValue => {
+            conditions.push(keyValue[0] + " = " + keyValue[1])
+        })
+        conditions = conditions.join(' AND ')
+        return this.makeQuery(format(`SELECT * FROM ${tableName} WHERE %s`, conditions))
     }
 
     static selectAll(tableName) {
@@ -55,7 +66,7 @@ class RestRepository {
             _columns = columns
             _values.push(values)
         }
-        const query = format(`INSERT INTO ${tableName} (%s) VALUES %L RETURNING *`, _columns, _values)
+        const query = format(`INSERT INTO ${tableName} (%s) VALUES %s RETURNING *`, _columns, _values)
         return this.makeQuery(query, [])
     }
 

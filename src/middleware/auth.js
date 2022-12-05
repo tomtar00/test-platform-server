@@ -50,6 +50,11 @@ const authorize = (req, res, isAuthorized) => {
 }
 exports.authorize = authorize
 
+exports.user = (req, res, next) => {
+    authorize(req, res, _ => true)
+        .then(next)
+        .catch(err => appExc.errorHandler(err, res, next))
+}
 exports.manage_permissions = (req, res, next) => {
     authorize(req, res, userPermissions => Promise.resolve(userPermissions.can_manage_permissions))
         .then(next)

@@ -1,4 +1,6 @@
 const RestService = require("./restService");
+const testRepository = require('../repository/testRepository')
+const questionRepository = require('../repository/questionRepository')
 
 class TestService extends RestService {
 
@@ -25,19 +27,55 @@ class TestService extends RestService {
     }
 
     findFull(id) {
-
+        return new Promise((resolve, reject) => {
+            let test = {}
+            testRepository.findTestById(id)
+                .then(res => test = res[0])
+                .then(_ => questionRepository.findTestQuestions(test.id))
+                .then(questions => test.questions = questions)
+                .then(_ => resolve([test]))
+                .catch(err => reject(err))
+        })
     }
 
-    findAll(page, page_size, name) {
-
+    findAll(page, pageSize, name) {
+        return new Promise((resolve, reject) => {
+            super.paginate(name, page, pageSize, test => test.test_name)
+                .then(tests => resolve(tests)).catch(_err => reject(_err))
+        })
     }
 
     add(body) {
+        return new Promise((resolve, reject) => {
 
+            let test = {...body}
+            let questions = JSON.parse(JSON.stringify(test.questions))
+            delete test.questions
+
+            testRepository.addTest(test)
+                .then(addedTest => {
+                    test = addedTest[0]
+                    questions.forEach(question => question.test_id = test.id)
+                    return questionRepository.addTestQuestions(questions)
+                })
+                .then(addedQuestions => {
+                    test.questions = addedQuestions
+                    resolve([test])
+                })
+                .catch(err => reject(err))
+        })
     }
 
     remove(id) {
-
+        return new Promise((resolve, reject) => {
+            testRepository.removeTestById(id)
+                .then(deletedTest => {
+                    questionRepository.removeTestQuestions(id)
+                    return deletedTest
+                })
+                .then(deletedTest => resolve(deletedTest))
+                .catch(err => reject(err))
+        })
     }
 }
 

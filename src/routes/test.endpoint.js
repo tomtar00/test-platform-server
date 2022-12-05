@@ -7,7 +7,7 @@ exports.testRoutes = (router, authorize) => {
     const testController = new TestController(testService)
 
     router.route('/tests/find-all')
-        .get(testController.validate('findAll'), testController.findAll)
+        .get(authorize.user, testController.validate('findAll'), testController.findAll)
 
     router.route('/tests/find')
         .get(authorize.solve_tests, testController.validate('find'), testController.find)
