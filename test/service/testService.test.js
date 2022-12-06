@@ -15,6 +15,11 @@ describe('Test service', () => {
                 question: 'Yes?',
                 answers: ['yes', 'no'],
                 correct_answer_idx: [0]
+            },
+            {
+                question: 'No?',
+                answers: ['yes', 'no'],
+                correct_answer_idx: [1]
             }
         ]
     }

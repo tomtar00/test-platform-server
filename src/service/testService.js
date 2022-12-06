@@ -1,12 +1,14 @@
 const RestService = require("./restService");
 const testRepository = require('../repository/testRepository')
-const questionRepository = require('../repository/questionRepository')
+const QuestionService = require('../service/questionService')
 
 class TestService extends RestService {
 
     constructor() {
         super()
         this.schemaTableName = 'tests.headers'
+
+        this.questionService = new QuestionService()
     }
 
     find(id, full) {
@@ -31,7 +33,7 @@ class TestService extends RestService {
             let test = {}
             testRepository.findTestById(id)
                 .then(res => test = res[0])
-                .then(_ => questionRepository.findTestQuestions(test.id))
+                .then(_ => this.questionService.findTestQuestions(test.id))
                 .then(questions => test.questions = questions)
                 .then(_ => resolve([test]))
                 .catch(err => reject(err))
@@ -56,7 +58,7 @@ class TestService extends RestService {
                 .then(addedTest => {
                     test = addedTest[0]
                     questions.forEach(question => question.test_id = test.id)
-                    return questionRepository.addTestQuestions(questions)
+                    return this.questionService.addTestQuestions(questions)
                 })
                 .then(addedQuestions => {
                     test.questions = addedQuestions
@@ -70,7 +72,7 @@ class TestService extends RestService {
         return new Promise((resolve, reject) => {
             testRepository.removeTestById(id)
                 .then(deletedTest => {
-                    questionRepository.removeTestQuestions(id)
+                    this.questionService.removeTestQuestions(id)
                     return deletedTest
                 })
                 .then(deletedTest => resolve(deletedTest))

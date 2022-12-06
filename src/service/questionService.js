@@ -1,4 +1,5 @@
 const RestService = require("./restService");
+const questionRepository = require('../repository/questionRepository')
 
 class QuestionService extends RestService {
 
@@ -7,12 +8,16 @@ class QuestionService extends RestService {
         this.schemaTableName = 'tests.questions'
     }
 
-    removeSingle(id) {
-
+    findTestQuestions(testId) {
+        return questionRepository.findTestQuestions(testId)
     }
 
-    removeMultiple(ids) {
+    addTestQuestions(questions) {
+        return questionRepository.addTestQuestions(questions)
+    }
 
+    removeTestQuestions(testId) {
+        return questionRepository.removeTestQuestions(testId)
     }
 }
 
