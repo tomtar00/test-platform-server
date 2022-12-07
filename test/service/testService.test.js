@@ -70,13 +70,15 @@ describe('Test service', () => {
         const result = await testService.add(testForm).catch(x => x)
         const addedTest = convertOutputToInputForm(result)
         expect(addedTest).toEqual(testForm)
+    })
 
+    it('cant add wrong test', () => {
         const wrongInputObject = {
             test_name: 'test',
             some_wrong_column_name: 123,
             groups: [0, 1]
         }
-        expect(testService.add(wrongInputObject)).rejects.toThrowError()
+        return expect(testService.add(wrongInputObject)).rejects.toThrowError()
     })
 
 })

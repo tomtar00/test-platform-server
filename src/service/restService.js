@@ -5,6 +5,14 @@ class RestService {
 
     constructor() { /* empty */  }
 
+    findBy(entry) {
+        Object.keys(entry).forEach(key => {
+            if (entry[key] === undefined || entry[key] === null)
+                delete entry[key]
+        })
+        return restRepository.selectBy(this.schemaTableName, entry)
+    }
+
     find(id) {
         return new Promise((resolve, reject) => {
             if (typeof id === 'string' && id.includes(',')) {

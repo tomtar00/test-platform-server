@@ -49,7 +49,7 @@ class RestRepository {
     }
 
     static selectMultiple(tableName, ids) {
-        return this.makeQuery(`SELECT * FROM ${tableName} WHERE id IN $1`, [ids])
+        return this.makeQuery(`SELECT * FROM ${tableName} WHERE id = ANY($1)`, [ids])
     }
 
     static insertSingle(tableName, body) {
@@ -84,7 +84,7 @@ class RestRepository {
     }
 
     static deleteMultiple(tableName, ids) {
-        return this.makeQuery(`DELETE FROM ${tableName} WHERE id IN $1 RETURNING *`, [ids])
+        return this.makeQuery(`DELETE FROM ${tableName} WHERE id = ANY($1) RETURNING *`, [ids])
     }
 
     static paginate(tableName, page, pageSize) {

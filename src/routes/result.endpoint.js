@@ -9,7 +9,4 @@ exports.resultRoutes = (router, authorize) => {
     router.route('/results/find')
         .get(authorize.view_stats, resultController.validate('find'), resultController.find)
 
-    router.route('/results/add')
-        .post(authorize.access_admin_panel, resultController.validate('add'), resultController.add)
-
 }

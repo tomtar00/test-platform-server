@@ -1,5 +1,4 @@
 const { err, UNAUTHORIZED, VALIDATION_FAILURE, FORBIDDEN } = require('../../src/utils/applicationException')
-require('../../src/routes/routes')
 const auth = require('../../src/middleware/auth')
 
 describe('Authorization', () => {

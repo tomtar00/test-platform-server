@@ -2,9 +2,8 @@ const jwt = require('jsonwebtoken');
 const token = require('./token')
 const appExc = require('../utils/applicationException')
 
-const ServiceManager = require('../service/serviceManager');
-const userService = ServiceManager.UserService
-const testService = ServiceManager.TestService
+const userService = new (require('../service/userService'))()
+const testService = new (require('../service/testSErvice'))()
 
 const accessTokenSecret = process.env.SECRET
 const timeIntervalSendNewToken = 10

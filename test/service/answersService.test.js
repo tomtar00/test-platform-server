@@ -1,4 +1,5 @@
 const AnswerService = require('./../../src/service/answerService')
+const { BAD_REQUEST } = require('../../src/utils/applicationException')
 
 describe('Answer Service', () => {
 
@@ -6,20 +7,20 @@ describe('Answer Service', () => {
 
     const answersToFirstTest = [
         {
-            test_id: 1,
             question_id: 1,
+            test_id: 1,
             user_id: 1,
             given_answer_idx: [0]
         },
         {
-            test_id: 1,
             question_id: 2,
+            test_id: 1,
             user_id: 1,
             given_answer_idx: [1]
         },
         {
-            test_id: 1,
             question_id: 3,
+            test_id: 1,
             user_id: 1,
             given_answer_idx: [0, 1, 2]
         }
@@ -48,16 +49,15 @@ describe('Answer Service', () => {
 
         const answersByUserId = await answerService.find(null, null, 1)
         expect(Object.keys(answersByUserId[0])).toEqual(answersKeys)
-        expect(answersByQuestionId.map(a => a.user_id).every(id => id === 1)).toBe(true)
+        expect(answersByUserId.map(a => a.user_id).every(id => id === 1)).toBe(true)
 
         const answersByTestId = await answerService.find(null, null, null, 1)
         expect(Object.keys(answersByTestId[0])).toEqual(answersKeys)
-        expect(answersByQuestionId.map(a => a.test_id).every(id => id === 1)).toBe(true)
+        expect(answersByTestId.map(a => a.test_id).every(id => id === 1)).toBe(true)
 
-
-        expect(answerService.find(null, -1)).rejects.toThrowError()
-        expect(answerService.find(null, null, -1)).rejects.toThrowError()
-        expect(answerService.find(null, null, null, -1)).rejects.toThrowError()
+        await expect(answerService.find(null, -1)).resolves.toEqual([])
+        await expect(answerService.find(null, null, -1)).resolves.toEqual([])
+        await expect(answerService.find(null, null, null, -1)).resolves.toEqual([])
 
     })
 
@@ -68,7 +68,8 @@ describe('Answer Service', () => {
         delete firstTestResults.date
         expect(firstTestResults).toEqual(testResults)
 
-        expect(answerService.add({})).rejects.toThrowError()
+        const result_fail = await answerService.add({}).catch(x => x)
+        expect(result_fail.error).toEqual(BAD_REQUEST)
 
     })
 
