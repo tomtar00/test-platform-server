@@ -10,7 +10,7 @@ exports.userRoutes = (router, authorize) => {
 
     // Users
     router.route('/users/authenticate')
-        .post(authorize.user, userController.validate('authenticate'), userController.authenticate)
+        .post(userController.validate('authenticate'), userController.authenticate)
 
     router.route('/users/find')
         .get(authorize.user, userController.validate('find'), userController.find)

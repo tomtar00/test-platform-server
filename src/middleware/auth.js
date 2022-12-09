@@ -51,28 +51,28 @@ exports.authorize = authorize
 
 exports.user = (req, res, next) => {
     authorize(req, res, _ => true)
-        .then(next)
-        .catch(err => appExc.errorHandler(err, res, next))
+        .then(_ => next())
+        .catch(err => appExc.handle(err, res, next))
 }
 exports.manage_permissions = (req, res, next) => {
     authorize(req, res, userPermissions => Promise.resolve(userPermissions.can_manage_permissions))
-        .then(next)
-        .catch(err => appExc.errorHandler(err, res, next))
+        .then(_ => next())
+        .catch(err => appExc.handle(err, res, next))
 }
 exports.manage_tests = (req, res, next) => {
     authorize(req, res, userPermissions => Promise.resolve(userPermissions.can_manage_tests))
-        .then(next)
-        .catch(err => appExc.errorHandler(err, res, next))
+        .then(_ => next())
+        .catch(err => appExc.handle(err, res, next))
 }
 exports.view_stats = (req, res, next) => {
     authorize(req, res, userPermissions => Promise.resolve(userPermissions.can_view_stats))
-        .then(next)
-        .catch(err => appExc.errorHandler(err, res, next))
+        .then(_ => next())
+        .catch(err => appExc.handle(err, res, next))
 }
 exports.access_admin_panel = (req, res, next) => {
     authorize(req, res, userPermissions => Promise.resolve(userPermissions.can_access_admin_panel))
-        .then(next)
-        .catch(err => appExc.errorHandler(err, res, next))
+        .then(_ => next())
+        .catch(err => appExc.handle(err, res, next))
 }
 exports.solve_tests = (req, res, next) => {
     authorize(req, res, userPermissions => {
@@ -114,6 +114,6 @@ exports.solve_tests = (req, res, next) => {
                 .catch(err => reject(err))
         })
     })
-        .then(next)
-        .catch(err => appExc.errorHandler(err, res, next))
+        .then(_ => next())
+        .catch(err => appExc.handle(err, res, next))
 }

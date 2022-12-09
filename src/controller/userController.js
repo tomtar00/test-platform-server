@@ -82,7 +82,7 @@ class UserController extends RestController {
     authenticate = (req, res, next) => {
         const credentials = req.body
 
-        this.service.authenticate(res, credentials)
+        this.service.authenticate(credentials, res)
             .then(user => {
                 res.status(200).send(user)
             })

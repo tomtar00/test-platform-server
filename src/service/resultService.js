@@ -8,6 +8,7 @@ class ResultService extends RestService {
     constructor() {
         super()
         this.schemaTableName = 'tests.results'
+        this.itemName = 'result'
 
         this.questionService = new QuestionService()
         this.testService = new TestService()

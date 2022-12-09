@@ -6,6 +6,7 @@ class QuestionService extends RestService {
     constructor() {
         super()
         this.schemaTableName = 'tests.questions'
+        this.itemName = 'question'
     }
 
     findTestQuestions(testId) {

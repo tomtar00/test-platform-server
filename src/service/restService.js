@@ -10,7 +10,15 @@ class RestService {
             if (entry[key] === undefined || entry[key] === null)
                 delete entry[key]
         })
-        return restRepository.selectBy(this.schemaTableName, entry)
+        return new Promise((resolve, reject) => {
+            restRepository.selectBy(this.schemaTableName, entry)
+                .then(res => {
+                    if (res.length <= 0)
+                        reject(exc.err(exc.NOT_FOUND, `Failed to find ${this.itemName}`))
+                    resolve(res)
+                })
+                .catch(err => reject(err))
+        })
     }
 
     find(id) {

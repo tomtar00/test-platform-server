@@ -12,6 +12,7 @@ class UserService extends RestService {
     constructor() {
         super()
         this.schemaTableName = 'users.accounts'
+        this.itemName = 'user'
     }
 
     async insertGroupsToDatabase() {

@@ -34,7 +34,8 @@ class RestRepository {
     static selectBy(tableName, entry) {
         let conditions = []
         Object.entries(entry).forEach(keyValue => {
-            conditions.push(keyValue[0] + " = " + keyValue[1])
+            const value = typeof keyValue[1] == 'string' ? `'${keyValue[1]}'` : keyValue[1]
+            conditions.push(keyValue[0] + " = " + value)
         })
         conditions = conditions.join(' AND ')
         return this.makeQuery(format(`SELECT * FROM ${tableName} WHERE %s`, conditions))
