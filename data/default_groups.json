@@ -1,20 +1,20 @@
 [
     {
-        "group_name": "Student",
+        "group_name": "student",
         "can_manage_permissions": false,
         "can_manage_tests": false,
         "can_view_stats": false,
         "can_access_admin_panel": false
     },
     {
-        "group_name": "Teacher",
+        "group_name": "teacher",
         "can_manage_permissions": false,
         "can_manage_tests": true,
         "can_view_stats": true,
         "can_access_admin_panel": false
     },
     {
-        "group_name": "Admin",
+        "group_name": "admin",
         "can_manage_permissions": true,
         "can_manage_tests": true,
         "can_view_stats": true,

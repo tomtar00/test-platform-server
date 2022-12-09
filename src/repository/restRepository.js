@@ -26,6 +26,8 @@ class RestRepository {
             }
             else if (typeof value == 'string')
                 return `'${value}'`
+                else if (typeof value == 'boolean')
+                return `${value}`
             else return value
         })
         return { columns, values }

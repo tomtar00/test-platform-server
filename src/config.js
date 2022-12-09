@@ -1,14 +1,11 @@
 const Pool = require('pg').Pool
 require("dotenv").config();
 
-const isRunningByJest = (process.env.JEST_WORKER_ID !== undefined)
-let config, pgConfig
-if (isRunningByJest) {
+const useTestingDb = ((process.env.JEST_WORKER_ID !== undefined) || process.argv.includes('test-db'))
+let pgConfig
+if (useTestingDb) {
     // testing
-
-    config = {
-        port: process.env.PORT_DEV
-    }
+    console.log("Started testing server");
     pgConfig = new Pool({
         user: process.env.DB_USER_DEV,
         host: process.env.DB_HOST_DEV,
@@ -19,10 +16,7 @@ if (isRunningByJest) {
 }
 else {
     // production
-
-    config = {
-        port: process.env.PORT
-    }
+    console.log("Started production server");
     pgConfig = new Pool({
         user: process.env.DB_USER,
         host: process.env.DB_HOST,
@@ -32,5 +26,7 @@ else {
     })
 }
 
-exports.config = config
+exports.config = {
+    port: process.env.PORT
+}
 exports.pgConfig = pgConfig

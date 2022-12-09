@@ -5,7 +5,8 @@
     "main": "index.js",
     "scripts": {
         "test": "jest --watchAll --verbose=true",
-        "start": "node index.js"
+        "start": "node index.js",
+        "test-server": "node index.js test-db"
     },
     "author": "",
     "license": "ISC",

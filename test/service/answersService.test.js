@@ -1,5 +1,5 @@
 const AnswerService = require('./../../src/service/answerService')
-const { BAD_REQUEST } = require('../../src/utils/applicationException')
+const appExc = require('../../src/utils/applicationException')
 
 describe('Answer Service', () => {
 
@@ -55,9 +55,9 @@ describe('Answer Service', () => {
         expect(Object.keys(answersByTestId[0])).toEqual(answersKeys)
         expect(answersByTestId.map(a => a.test_id).every(id => id === 1)).toBe(true)
 
-        await expect(answerService.find(null, -1)).resolves.toEqual([])
-        await expect(answerService.find(null, null, -1)).resolves.toEqual([])
-        await expect(answerService.find(null, null, null, -1)).resolves.toEqual([])
+        await expect(answerService.find(null, -1)).rejects.toBeInstanceOf(appExc.exc)
+        await expect(answerService.find(null, null, -1)).rejects.toBeInstanceOf(appExc.exc)
+        await expect(answerService.find(null, null, null, -1)).rejects.toBeInstanceOf(appExc.exc)
 
     })
 
@@ -69,7 +69,7 @@ describe('Answer Service', () => {
         expect(firstTestResults).toEqual(testResults)
 
         const result_fail = await answerService.add({}).catch(x => x)
-        expect(result_fail.error).toEqual(BAD_REQUEST)
+        expect(result_fail.error).toEqual(appExc.BAD_REQUEST)
 
     })
 
