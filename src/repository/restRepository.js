@@ -28,6 +28,8 @@ class RestRepository {
                 return `'${value}'`
                 else if (typeof value == 'boolean')
                 return `${value}`
+            else if (value === null || value === undefined)
+                return 'NULL'
             else return value
         })
         return { columns, values }

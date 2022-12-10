@@ -1,5 +1,5 @@
 const RestController = require("./restController");
-const { query } = require('express-validator')
+const { query, body } = require('express-validator')
 const error = require('../utils/applicationException')
 
 class TestController extends RestController {
@@ -10,6 +10,10 @@ class TestController extends RestController {
         this.methods.find = [
             query('id', 'Test id not found').exists(),
             query('full').isBoolean().optional()
+        ]
+        this.methods.add = [
+            body('test_name', 'Wrong test name').isString(),
+            body('questions', 'Questions must be ab array').isArray()
         ]
         this.methods.findAll = [
             query('page').isInt().optional(),

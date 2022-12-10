@@ -1,4 +1,5 @@
 const { validationResult, query, body } = require('express-validator')
+const val = require('express-validator')
 const error = require('../utils/applicationException')
 
 class RestController {
@@ -11,12 +12,9 @@ class RestController {
                 query('id', 'Id not found').isInt().optional(),
                 query('name').isString().optional(),
             ],
-            add: [
-                body().isJSON()
-            ],
+            add: [],
             edit: [
-                query('id', 'Id not found').isInt().optional(),
-                body().isJSON()
+                query('id', 'Id not found').isInt().optional()
             ],
             delete: [
                 query('id', 'Id not found').isInt().optional(),
