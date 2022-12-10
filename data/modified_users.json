@@ -1,8 +1,14 @@
 [
     {
+        "account_name": "teacher",
+        "groups": [
+            "teacher"
+        ]
+    },
+    {
         "account_name": "admin",
         "groups": [
-            "admin"
+            "teacher", "admin"
         ]
     }
 ]

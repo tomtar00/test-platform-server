@@ -16,6 +16,8 @@ SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
 
+DROP RULE delete_user_groups_permissions ON users.accounts;
+DROP RULE delete_test_questions ON tests.headers;
 ALTER TABLE ONLY users.groups DROP CONSTRAINT groups_pkey;
 ALTER TABLE ONLY users.accounts DROP CONSTRAINT accounts_pkey;
 ALTER TABLE ONLY tests.results DROP CONSTRAINT results_pkey;
@@ -555,6 +557,27 @@ ALTER TABLE ONLY users.accounts
 
 ALTER TABLE ONLY users.groups
     ADD CONSTRAINT groups_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: headers delete_test_questions; Type: RULE; Schema: tests; Owner: postgres
+--
+
+CREATE RULE delete_test_questions AS
+    ON DELETE TO tests.headers DO  DELETE FROM tests.questions
+  WHERE (questions.test_id = old.id);
+
+
+--
+-- Name: accounts delete_user_groups_permissions; Type: RULE; Schema: users; Owner: postgres
+--
+
+CREATE RULE delete_user_groups_permissions AS
+    ON DELETE TO users.accounts DO ( DELETE FROM users.account_groups
+  WHERE (account_groups.account_id = old.id);
+ DELETE FROM users.account_permissions
+  WHERE (account_permissions.account_id = old.id);
+);
 
 
 --

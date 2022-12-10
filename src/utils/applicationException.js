@@ -22,10 +22,12 @@ module.exports = {
         return new ApplicationException(code, message)
     },
     handle: (error, response, next) => {
-        const error_msg = String(error.message || error.error.message || error)
+        let error_msg
         if (error instanceof ApplicationException) {
+            error_msg = String(error.message || error.error.message)
             response.status(error.error.code).send({'message': error_msg})
         } else {
+            error_msg = String(error)
             response.status(500).send({"message": error_msg})
         }
         console.trace(error_msg)

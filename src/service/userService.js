@@ -6,6 +6,7 @@ const token = require('../middleware/token')
 
 const groupsPath = './data/default_groups.json'
 const modUsersPath = './data/modified_users.json'
+const defaultGroupName = 'student'
 
 class UserService extends RestService {
 
@@ -46,9 +47,9 @@ class UserService extends RestService {
                     user_groups = []
                     const customGroups = jsonTools.readFromFile(groupsPath)
 
-                    // add 'User' group to EVERY user
-                    if (customGroups.find(g => g.cn === 'Student'))
-                        user_groups.push('Student')
+                    // add 'Student' group to EVERY user
+                    if (customGroups.find(g => g.group_name === defaultGroupName))
+                        user_groups.push(defaultGroupName)
 
                     // apply groups to a single user (from modified_users.json)
                     const mod_users = jsonTools.readFromFile(modUsersPath)
@@ -68,14 +69,13 @@ class UserService extends RestService {
                                 user = _user[0]
 
                                 this.updateUserGroups(user.id, user_groups)
+                                    .then(_ =>  userRepository.addPermissions(user.id, permissions))
+                                    .then(_ => {
+                                        res.set('access_token', token.generateAccessToken(username, user.id))
+                                        delete user.password
+                                        resolve([user])
+                                    })
                                     .catch(_err => reject(_err))
-                                userRepository.addPermissions(user.id, permissions)
-                                    .catch(_err => reject(_err))
-                            })
-                            .then(() => {
-                                res.set('access_token', token.generateAccessToken(username, user.id))
-                                delete user.password
-                                resolve([user])
                             })
                             .catch(_err => reject(_err))
                     }
@@ -86,13 +86,13 @@ class UserService extends RestService {
                             reject(exc.err(exc.VALIDATION_FAILURE, "Incorrect password"))
                         else {
                             this.updateUserGroups(user.id, user_groups)
+                                .then(_ => this.updateUserPermissions(user.id, user_groups))
+                                .then(_ => {
+                                    res.set('access_token', token.generateAccessToken(username, user.id))
+                                    delete user.password
+                                    resolve([user])
+                                })
                                 .catch(_err => reject(_err))
-                            this.updateUserPermissions(user.id, user_groups)
-                                .catch(_err => reject(_err))
-
-                            res.set('access_token', token.generateAccessToken(username, user.id))
-                            delete user.password
-                            resolve([user])
                         }
                     }
                 })
@@ -126,7 +126,9 @@ class UserService extends RestService {
                 resolve('')
             else {
                 userRepository.findGroupIdsByGroupNames(groupNames)
-                    .then(groupsIds => userRepository.editUserGroups(userId, groupsIds))
+                    .then(groupsIds => {
+                        return userRepository.editUserGroups(userId, groupsIds)
+                    })
                     .then(res => resolve(res))
                     .catch(err => reject(err))
             }
@@ -136,9 +138,15 @@ class UserService extends RestService {
     updateUserPermissions(userId, groups) {
         return new Promise((resolve, reject) => {
             this.getUserPermissions(groups)
-                .then(permissions => userRepository.editUserPermissions(userId, permissions))
-                .then(res => resolve(res))
-                .catch(err => reject(err))
+                .then(permissions => {
+                    return userRepository.editUserPermissions(userId, permissions)
+                })
+                .then(res => {
+                    resolve(res)
+                })
+                .catch(err => {
+                    reject(err)
+                })
         })
     }
 
@@ -175,7 +183,7 @@ class UserService extends RestService {
                 .then(res => {
                     users_affected = res.map(u => u.account_id)
                     // get unique ids
-                    users_affected = [...new Set(users_affected)]
+                    users_affected = [...new Set(users_affected)];
 
                     users_affected.forEach(uid => {
                         this.findUserGroups(uid)

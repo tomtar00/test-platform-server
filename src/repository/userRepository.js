@@ -1,4 +1,5 @@
 const RestRepository = require("./restRepository");
+const format = require('pg-format');
 
 class UserRepository extends RestRepository {
     static findGroupColumnNames() {
@@ -10,15 +11,24 @@ class UserRepository extends RestRepository {
     }
     static findUserPermissionsByGroups(permissionNames, groupNames) {
         const values = permissionNames.map(p => `sum(${p}::int) > 0 as ${p}`).join(',')
-        return this.makeQuery(`SELECT ${values} FROM ${this.groupsTable} WHERE group_name in ($1)`, [groupNames])
+        return this.makeQuery(`SELECT ${values} FROM ${this.groupsTable} WHERE group_name = ANY($1)`, [groupNames])
     }
     static addPermissions(userId, permissions) {
         const columns = ['account_id'].concat(Object.keys(permissions))
         const values = [userId].concat(Object.values(permissions))
-        return this.makeQuery(`INSERT INTO ${this.permissionsTable} ($1) VALUES ($2)`, [columns, values])
+        const body = {}
+        columns.forEach((c, i) => {
+            body[c] = values[i]
+        })
+        return this.insertSingle(this.permissionsTable, body)
     }
     static editUserPermissions(userId, permissions) {
-        return this.updateSingle(this.permissionsTable, permissions, userId)
+        let { columns, values } = this.jsonBodyToQueryValues(permissions)
+        let set_query = []
+        columns.forEach((col, idx) => {
+            set_query.push(col + '=' + values[idx])
+        })
+        return this.makeQuery(`UPDATE ${this.permissionsTable} SET ${set_query} WHERE account_id = $1 RETURNING *`, [userId])
     }
 
     static findUserByName(userName) {
@@ -43,14 +53,14 @@ class UserRepository extends RestRepository {
             WHERE a.id = $1`, [userId])
     }
     static findGroupIdsByGroupNames(groupNames) {
-        return this.makeQuery(`SELECT id FROM ${this.groupsTable} WHERE group_name IN ($1)`, [groupNames])
+        return this.makeQuery(`SELECT id FROM ${this.groupsTable} WHERE group_name = ANY($1)`, [groupNames])
     }
     static findUserIdsFromGroupIds(groupIds) {
-        return this.makeQuery(`SELECT account_id FROM users.account_groups WHERE group_id IN ($1)`, [groupIds])
+        return this.makeQuery(`SELECT account_id FROM users.account_groups WHERE group_id = ANY($1)`, [groupIds])
     }
     static editUserGroups(userId, groupIds) {
         const deleteOld = this.makeQuery(`DELETE FROM ${this.accountGroupsTable} WHERE account_id = $1`, [userId])
-        const insertNew = this.makeQuery(`INSERT INTO ${this.accountGroupsTable} (account_id, group_id) VALUES $1`, [groupIds.map(g => `(${userId}, ${g.id})`)])
+        const insertNew = this.makeQuery(format(`INSERT INTO ${this.accountGroupsTable} (account_id, group_id) VALUES %s`, [groupIds.map(g => `(${userId}, ${g.id})`)].join(',')), [])
         return Promise.all([deleteOld, insertNew])
     }
     static addGroups(groups) {

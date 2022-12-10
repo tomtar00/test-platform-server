@@ -88,6 +88,15 @@ insert into tests.results (test_id, test_name, user_id, user_name, points, max_p
 
 ------------------- ALTER --------------------------
 
+------------------- RULES --------------------------
+CREATE OR REPLACE RULE delete_test_questions AS ON DELETE TO tests.headers DO ALSO (
+    DELETE FROM tests.questions WHERE test_id = OLD.id;
+);
+CREATE OR REPLACE RULE delete_user_groups_permissions AS ON DELETE TO users.accounts DO ALSO (
+    DELETE FROM users.account_groups WHERE account_id = OLD.id;
+    DELETE FROM users.account_permissions WHERE account_id = OLD.id;
+);
+
 ------------------- RESET --------------------------
 TRUNCATE users.accounts RESTART IDENTITY CASCADE;
 TRUNCATE users.account_permissions RESTART IDENTITY CASCADE;

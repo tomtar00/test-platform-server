@@ -1,7 +1,7 @@
 DUMP:
-> pg_dump -c -d test-platform-db-dev -p 5434 -U postgres -f test_db_backup.sql
+> pg_dump -c -d test-platform-db-dev -p 5434 -U postgres -f data/test_db_backup.sql
 Password: haslo
 
 RESTORE:
-psql -p 5434 -U postgres test-platform-dev < data/test_db_backup.sql
+psql -p 5434 -U postgres test-platform-db < data/test_db_backup.sql
 Password: haslo
