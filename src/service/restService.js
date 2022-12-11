@@ -5,13 +5,13 @@ class RestService {
 
     constructor() { /* empty */  }
 
-    findBy(entry) {
+    findBy(entry, exactString=true) {
         Object.keys(entry).forEach(key => {
             if (entry[key] === undefined || entry[key] === null)
                 delete entry[key]
         })
         return new Promise((resolve, reject) => {
-            restRepository.selectBy(this.schemaTableName, entry)
+            restRepository.selectBy(this.schemaTableName, entry, exactString)
                 .then(res => {
                     if (res.length <= 0)
                         reject(exc.err(exc.NOT_FOUND, `Failed to find ${this.itemName}`))

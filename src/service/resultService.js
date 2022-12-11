@@ -26,7 +26,7 @@ class ResultService extends RestService {
                 super.findBy({
                     user_name: userName,
                     test_name: testName
-                })
+                }, false)
                     .then(results => resolve(results))
                     .catch(err => reject(err))
             }

@@ -1,5 +1,5 @@
 const RestController = require("./restController")
-const { query } = require('express-validator')
+const { query, oneOf } = require('express-validator')
 const error = require('../utils/applicationException')
 
 class ResultController extends RestController {
@@ -8,20 +8,20 @@ class ResultController extends RestController {
         super(service)
 
         this.methods.find = [
-            query('id').isInt().optional(),
-            query('userId').isInt().optional(),
-            query('testId').isInt().optional(),
-            query('full').isBoolean().optional()
+            oneOf([
+                query('id').isInt(),
+                query('testName').isString(),
+                query('userName').isString()
+            ])
         ]
     }
 
     find = (req, res, next) => {
         const id = req.query.id
-        const userId = req.query.userId
-        const testId = req.query.testId
-        const full = req.query.full
+        const userName = req.query.userName
+        const testName = req.query.testName
 
-        this.service.find(id, userId, testId, full)
+        this.service.find(id, userName, testName)
             .then(results => {
                 res.status(200).send(results)
             })

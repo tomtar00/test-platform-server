@@ -1,5 +1,5 @@
 const RestController = require("./restController");
-const { body, query } = require('express-validator')
+const { body, query, oneOf } = require('express-validator')
 const error = require('../utils/applicationException')
 
 class UserController extends RestController {
@@ -8,10 +8,16 @@ class UserController extends RestController {
         super(service)
 
         this.methods.find = [
-            query('id', 'User id not found').isInt().optional(),
-            query('name').isString().optional(),
-            query('page').isInt().optional(),
-            query('page_size').isInt().optional(),
+            oneOf([
+                [
+                    query('id', 'User id not found').isInt()
+                ],
+                [
+                    query('name').isString().optional(),
+                    query('page').isInt(),
+                    query('page_size').isInt()
+                ]
+            ])
         ]
         this.methods.findUserPermissions = [
             query('id', 'User id not found').isInt().exists()
@@ -24,7 +30,14 @@ class UserController extends RestController {
             body('password').isString().exists()
         ]
         this.methods.findAllGroups = []
-        this.methods.editGroupsPermissions = []
+        this.methods.editGroupsPermissions = [
+            body().isArray(),
+            body('*.group_name').isString(),
+            body('*.can_manage_permissions').isBoolean(),
+            body('*.can_manage_tests').isBoolean(),
+            body('*.can_access_admin_panel').isBoolean(),
+            body('*.can_view_stats').isBoolean(),
+        ]
     }
 
     find = (req, res, next) => {
