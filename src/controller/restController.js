@@ -14,7 +14,10 @@ class RestController {
                 ])
             ],
             add: [
-                body().isObject()
+                oneOf([
+                    body().isObject(),
+                    body().isArray()
+                ])
             ],
             edit: [
                 body().isObject(),

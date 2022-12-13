@@ -133,27 +133,19 @@ class RestService {
         })
     }
 
-    paginate(name, page, pageSize, getNameField) {
+    paginate(name, page, pageSize, fieldName) {
         return new Promise((resolve, reject) => {
             pageSize = parseInt(pageSize)
             page = parseInt(page)
     
-            if (((!page || !pageSize) && !name) || page < 1 || pageSize < 1) {
+            const passedBoth = page && pageSize && page > 0 && pageSize > 0
+            if (!passedBoth) {
                 reject(exc.err(exc.BAD_REQUEST,
                     `Passed invalid pagination params: page = ${page}, page_size = ${pageSize}`))
             }
             else 
-            {
-                let promise = (!page || !pageSize) && name ? 
-                    restRepository.selectAll(this.schemaTableName) :
-                    restRepository.paginate(this.schemaTableName, page, pageSize)
-    
-                promise.then(items => {
-                    if (name)
-                        items = items.filter(item =>
-                            getNameField(item).toLowerCase().includes(name.toLowerCase())
-                        )
-
+            {    
+                restRepository.paginate(this.schemaTableName, page, pageSize, fieldName, name).then(items => {
                     if (items.length > 0) {
                         this.pageCount = Math.ceil(items[0].count / pageSize)
                         if (items[0].password)
@@ -161,9 +153,8 @@ class RestService {
                         resolve(items)
                     }
                     else {
-                        reject(exc.err(exc.NOT_FOUND, 'Users not found'))
+                        reject(exc.err(exc.NOT_FOUND, `${this.itemName}s not found`))
                     }
-    
                 })
                 .catch(err => reject(err))
             }

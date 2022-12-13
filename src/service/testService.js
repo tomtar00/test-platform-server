@@ -43,7 +43,7 @@ class TestService extends RestService {
 
     findAll(page, pageSize, name) {
         return new Promise((resolve, reject) => {
-            super.paginate(name, page, pageSize, test => test.test_name)
+            super.paginate(name, page, pageSize, 'test_name')
                 .then(tests => resolve(tests)).catch(_err => reject(_err))
         })
     }

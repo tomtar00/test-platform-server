@@ -1,5 +1,5 @@
 const RestController = require("./restController")
-const { query, oneOf } = require('express-validator')
+const { query, oneOf, body } = require('express-validator')
 const error = require('../utils/applicationException')
 
 class AnswerController extends RestController {
@@ -14,6 +14,13 @@ class AnswerController extends RestController {
                 query('userId').isInt(),
                 query('testId').isInt()
             ])
+        ]
+        this.methods.add = [
+            body('*.question_id').isInt(),
+            body('*.test_id').isInt(),
+            body('*.user_id').isInt(),
+            body('*.given_answer_idx').isArray(),
+            body('*.given_answer_idx.*').isInt(),
         ]
     }
 

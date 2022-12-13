@@ -103,8 +103,12 @@ class RestRepository {
         return this.makeQuery(`DELETE FROM ${tableName} WHERE id = ANY($1) RETURNING *`, [ids])
     }
 
-    static paginate(tableName, page, pageSize) {
-        return this.makeQuery(`SELECT *, (SELECT COUNT(*) FROM ${tableName}) FROM ${tableName} OFFSET $1 LIMIT $2`, [(page-1) * pageSize, pageSize])
+    static paginate(tableName, page, pageSize, filedName, name) {
+        return this.makeQuery(`
+            SELECT *, (SELECT COUNT(*) FROM ${tableName} )
+            FROM ${tableName} 
+            WHERE ${filedName}  ILIKE concat('%', $1::text, '%') 
+            OFFSET $2 LIMIT $3`, [name, (page-1) * pageSize, pageSize])
     }
 }
 

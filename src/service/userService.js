@@ -154,7 +154,7 @@ class UserService extends RestService {
 
     find(id, name, page, pageSize) {
         return new Promise((resolve, reject) => {
-            const promise = id ? super.find(id) : super.paginate(name, page, pageSize, user => user.account_name)
+            const promise = id ? super.find(id) : super.paginate(name, page, pageSize, 'account_name')
             promise.then(user => {
                 user.forEach(u => delete u.password)
                 resolve(user)

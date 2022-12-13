@@ -26,7 +26,7 @@ describe('User service', () => {
     
     it('can find users', async () => {
         const userFromId = await userService.find('1')
-        const userFromName = await userService.find(null, 'student')
+        const userFromName = await userService.find(null, 'student', 1, 1)
         const userPage = await userService.find(null, null, 1, 3)
 
         expect(userFromId[0]).toHaveProperty('account_name')
