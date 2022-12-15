@@ -105,9 +105,9 @@ class RestRepository {
 
     static paginate(tableName, page, pageSize, filedName, name) {
         return this.makeQuery(`
-            SELECT *, (SELECT COUNT(*) FROM ${tableName} )
+            SELECT *, (SELECT COUNT(*) FROM ${tableName} WHERE ${filedName} ILIKE concat('%', $1::text, '%'))
             FROM ${tableName} 
-            WHERE ${filedName}  ILIKE concat('%', $1::text, '%') 
+            WHERE ${filedName} ILIKE concat('%', $1::text, '%') 
             OFFSET $2 LIMIT $3`, [name, (page-1) * pageSize, pageSize])
     }
 }
