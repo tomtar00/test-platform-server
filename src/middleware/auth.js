@@ -81,7 +81,7 @@ exports.solve_tests = (req, res, next) => {
             let user_groups
             userService.findUserGroups(userPermissions.account_id)
                 .then(groups => {
-                    user_groups = groups.map(g => g.group_name)
+                    user_groups = groups.map(g => g.id)
                     return testService.find(req.query.id || req.body[0].test_id)
                 })
                 .then(test => {
